@@ -1,0 +1,155 @@
+openapi: 3.0.3
+info:
+  title: Tinder App API
+  description: Backend API for the Tinder-like mobile application
+  version: 1.0.0
+servers:
+  - url: 'http://localhost:8000/api'
+    description: Local development server
+paths:
+  /users/recommended:
+    get:
+      summary: Get recommended users
+      description: Retrieve a paginated list of recommended users
+      parameters:
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          description: Number of users per page
+          required: false
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+  /users/{id}/like:
+    post:
+      summary: Like a user
+      description: Record that the current user likes another user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        '401':
+          description: Unauthorized
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error
+  /users/{id}/dislike:
+    post:
+      summary: Dislike a user
+      description: Record that the current user dislikes another user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+        '401':
+          description: Unauthorized
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error
+  /users/liked:
+    get:
+      summary: Get liked users
+      description: Retrieve a list of users that the current user has liked
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal server error
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        age:
+          type: integer
+        bio:
+          type: string
+        location:
+          type: string
+        distance:
+          type: number
+          format: float
+        pictures:
+          type: array
+          items:
+            type: string
+    Pagination:
+      type: object
+      properties:
+        current_page:
+          type: integer
+        last_page:
+          type: integer
+        per_page:
+          type: integer
+        total:
+          type: integer
